@@ -15,12 +15,15 @@ INSERT INTO carrier_performance (
 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)''', 
 ('Example Carrier', '123456', 'Active', 10, 50, 30, 500000, '2023-01-01', 'Satisfactory'))
 
+# Get the carrier_id of the inserted carrier
+carrier_id = cursor.lastrowid
+
 # Financial and Credit Scores
 cursor.execute('''
 INSERT INTO financial_and_credit_scores (
-    revenue_usd, ebitda_usd, net_profit_usd, credit_score
-) VALUES (?, ?, ?, ?)''', 
-(1000000.0, 150000.0, 120000.0, 750))
+    carrier_id, revenue_usd, ebitda_usd, net_profit_usd, credit_score
+) VALUES (?, ?, ?, ?, ?)''', 
+(carrier_id, 1000000.0, 150000.0, 120000.0, 750))
 
 # Commodity Matrix
 commodities = [

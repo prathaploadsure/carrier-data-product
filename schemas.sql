@@ -1,5 +1,6 @@
 DROP TABLE IF EXISTS carrier_performance;
 CREATE TABLE carrier_performance (
+    carrier_id INTEGER PRIMARY KEY,
     carrier_name TEXT,
     carrier_dot_number TEXT,
     operating_status TEXT,
@@ -13,10 +14,12 @@ CREATE TABLE carrier_performance (
 
 DROP TABLE IF EXISTS financial_and_credit_scores;
 CREATE TABLE financial_and_credit_scores (
+    carrier_id INTEGER,
     revenue_usd REAL,
     ebitda_usd REAL,
     net_profit_usd REAL,
-    credit_score INTEGER
+    credit_score INTEGER,
+    FOREIGN KEY (carrier_id) REFERENCES carrier_performance(carrier_id)
 );
 
 DROP TABLE IF EXISTS commodity_matrix;
