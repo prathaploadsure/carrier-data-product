@@ -19,7 +19,13 @@ carrier_model = api.model('Carrier', {
     'carrier_dot_number': fields.String(required=True, description='DOT number of the carrier'),
     'safety_rating': fields.String(description='Safety rating of the carrier'),
     'revenue_usd': fields.Float(description='Revenue of the carrier in USD'),
-    'credit_score': fields.Integer(description='Credit score of the carrier')
+    'credit_score': fields.Integer(description='Credit score of the carrier'),
+    'no_of_drivers': fields.Integer(description='Number of drivers associated with the carrier'),
+    'no_of_vehicles': fields.Integer(description='Number of vehicles associated with the carrier'),
+    'annual_miles': fields.Integer(description='Annual miles driven by the carrier'),
+    'operating_status': fields.String(description='Operating status of the carrier'),
+    'years_in_business': fields.Integer(description='Number of years the carrier has been in business'),
+    'oos_date': fields.String(description='Date of the last out-of-service order, if any')
 })
 
 driver_performance_model = api.model('DriverPerformance', {
