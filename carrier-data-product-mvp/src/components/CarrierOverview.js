@@ -1,28 +1,49 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchCarrierOverview } from '../actions/carrierActions'; // Assuming you have an actions file
+import { fetchCarrierOverview } from '../actions/carrierActions';
 import ChartComponent from './ChartComponent';
 import MapComponent from './MapComponent';
+import ErrorBoundary from './ErrorBoundary';
 
 function CarrierOverview() {
   const dispatch = useDispatch();
-  const carrierOverview = useSelector(state => state.carrier.carrierOverview);
+  const carrierOverview = useSelector(state => state.carrier?.carrierOverview);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
+    let isMounted = true; // Track whether the component is mounted
+
     dispatch(fetchCarrierOverview())
-      .then(() => setIsLoading(false))
-      .catch(error => console.error('Error fetching carrier overview:', error));
-  }, [dispatch]); // Fetch data when the component mounts
+      .then(() => {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching carrier overview:', error);
+        if (isMounted) {
+          setError(error);
+          setIsLoading(false);
+        }
+      });
+
+    return () => {
+      isMounted = false; // Cleanup to avoid setting state on unmounted component
+    };
+  }, [dispatch]);
 
   if (isLoading) {
-    return <div>Loading...</div>; // Show loading indicator while fetching data
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error.message}</div>; // Display the actual error message
   }
 
   if (!carrierOverview) {
-    return <div>Error: Carrier data not found.</div>; // Basic error handling
+    return <div>Error: Carrier data not found.</div>;
   }
-
 
   // Prepare data for financial snapshot chart (example)
   const financialSnapshotData = [
@@ -62,7 +83,9 @@ function CarrierOverview() {
           <p>Safety Rating: {carrierOverview.safety_rating}</p>
         </div>
         <div className="col-md-6">
-          <ChartComponent data={financialSnapshotData} layout={financialSnapshotLayout} />
+          <ErrorBoundary>
+            <ChartComponent data={financialSnapshotData} layout={financialSnapshotLayout} />
+          </ErrorBoundary>
         </div>
       </div>
 
@@ -70,7 +93,9 @@ function CarrierOverview() {
 
       <div className="mt-4">
         <h3>Location Risk</h3>
-        <MapComponent center={mapCenter} zoom={mapZoom} markersData={markersData} />
+        <ErrorBoundary>
+          <MapComponent center={mapCenter} zoom={mapZoom} markersData={markersData} />
+        </ErrorBoundary>
         <div className="mt-2">
           <a href={carrierOverview.streetview_image} target="_blank" rel="noopener noreferrer">
             Street View
